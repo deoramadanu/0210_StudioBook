@@ -1,47 +1,44 @@
 # StudioBook
 
-StudioBook adalah aplikasi Android untuk mempermudah rental studio musik, penyewaan alat tambahan, serta *tracking* jadwal sesi latihan antara *User* dan *Admin*.
+StudioBook adalah aplikasi Android berbasis Kotlin dan Jetpack Compose untuk mempermudah penyewaan ruangan studio musik, penyewaan alat musik tambahan, serta pelacakan (*tracking*) slot jadwal sesi latihan antara **User** dan **Admin**.
 
-Repository ini digunakan untuk Project Akhir mata kuliah Pengembangan Aplikasi Mobile 2026[cite: 2, 23]. Repository berisi informasi proyek dan progres pengerjaan[cite: 23]. Dokumen SRS utama disusun di Google Docs.
+Repository ini digunakan untuk **Project Akhir Mata Kuliah Pengembangan Aplikasi Mobile (PAM) 2026** oleh **Alfilla Deo Ramadanu** (NIM: `20240140210`, Kelas B — Teknologi Informasi, Universitas Muhammadiyah Yogyakarta).
 
 ## Dokumen SRS
 
-[SRS StudioBook — Google Docs](https://docs.google.com/document/d/1cH5uK-r65YppjXJ3IA9fmv4UPfXlLdFj/edit?usp=sharing&ouid=103894771429013311323&rtpof=true&sd=true)
+- [SRS StudioBook (v0.4) — Google Docs](https://docs.google.com/document/d/1cH5uK-r65YppjXJ3IA9fmv4UPfXlLdFj/edit?usp=sharing&ouid=103894771429013311323&rtpof=true&sd=true)
 
-SRS disusun mengikuti template yang diberikan untuk mata kuliah[cite: 11, 23], mencakup kebutuhan dan fitur sistem[cite: 17, 23], *use case*[cite: 17, 23], alur proses/diagram[cite: 17, 23], serta struktur data dan relasi entitas[cite: 19, 23]. Kesesuaian isi dokumen dengan template dan keselarasan proyek akan dijaga selama pengembangan[cite: 5, 23].
+Dokumen Software Requirement Specification (SRS) disusun mengikuti template mata kuliah dan telah diperbarui ke versi `v0.4` untuk menyelaraskan seluruh kebutuhan fungsional (`REQ-01` s.d. `REQ-18`), *Use Case Diagram* (Bab 2), *Flowchart* & *Activity Diagram* per fitur (Bab 3), *Entity Relationship Diagram* / ERD & *Requirements Traceability Matrix* / RAT (Bab 6), serta aturan bisnis aktual aplikasi.
 
-## Ringkasan Proyek
+## Ringkasan Proyek & Aturan Bisnis
 
-StudioBook dirancang untuk membantu pengguna (*User*) mencari studio dan alat tambahan, mengajukan *booking* dengan konfirmasi transfer (*non-refundable* / menunggu ACC admin) serta pencegahan bentrok slot per kombinasi studio, tanggal, dan jam, dan memantau jadwal aktif (dengan pembersihan otomatis/*auto-purge* jadwal yang sudah melewati batas waktu). Sementara itu, *Admin* memiliki akses untuk meng-ACC transfer, menghapus jadwal, serta mengelola data studio dan alat musik (CRUDS).
+- **Peran Pengguna (`USER` & `ADMIN`):** Pemisahan hak akses dan *role-based UI* untuk penyewa studio (`USER`) dan pengelola studio (`ADMIN`).
+- **Katalog Studio & Alat Musik (CRUDS):** Manajemen dan pencarian ruangan studio (kapasitas, tarif per jam, fasilitas, status) serta alat musik/perlengkapan tambahan dengan operasi *Create, Read, Update, Delete, Search* (CRUDS).
+- **Booking & Anti-Bentrok Spesifik:** Pengguna memilih studio, tanggal (`YYYY-MM-DD`, kompatibel `minSdk 24+`), slot jam, serta mengisi Nama Band, Nama Pemesan, dan konfirmasi transfer. Validasi anti-bentrok memeriksa kombinasi spesifik **`Studio + Tanggal + Jam/Slot`**, sehingga studio berbeda pada jam yang sama tetap dapat dipesan bila slotnya tersedia.
+- **Pembayaran Transfer Non-Refundable:** Pembayaran transfer ke Admin bersifat *non-refundable* (tanpa tombol pembatalan/refund sepihak yang bertentangan dengan aturan bisnis).
+- **ACC Transfer Admin & Auto-Purge:** Admin dapat meng-ACC transfer (`Pending -> Confirmed`) dan menghapus jadwal. Jadwal yang sudah melewati batas tanggal dan jam selesai dibersihkan secara otomatis (*auto-purge*).
 
-## Teknologi dan Batasan
+## Teknologi dan Arsitektur
 
-- Android: Kotlin, Jetpack Compose, Jetpack Navigation Compose, dan MVVM[cite: 5, 7, 23].
-- State UI dikelola melalui `ViewModel` menggunakan `StateFlow`[cite: 7, 23].
-- Backend: REST API JSON dengan autentikasi token[cite: 7, 23].
-- Database: MySQL / Postgres / Cloud Database (sesuai ketentuan pedoman)[cite: 7].
-- Penyimpanan lokal untuk file/preferensi; Room Database tidak digunakan[cite: 7, 23].
+- **Bahasa & UI:** Kotlin, Jetpack Compose murni, dan Jetpack Navigation Compose (`Screen.kt`).
+- **Arsitektur:** MVVM (`StudioViewModel` & `StudioRepository`) dengan pengelolaan *state* reaktif menggunakan `StateFlow` dan Kotlin Coroutines.
+- **Backend & Jaringan:** REST API berbasis HTTP/HTTPS & JSON menggunakan Retrofit, OkHttp, dan Gson (`ApiService.kt`, `RetrofitClient.kt`) dengan autentikasi JWT (*Access Token* & *Refresh Token*).
+- **Database & Penyimpanan Lokal:** Basis data relasional/cloud (MySQL / PostgreSQL / Supabase) melalui REST API, penyimpanan sesi/token melalui Preferences DataStore (`TokenManager.kt`), serta pengelolaan file lokal perangkat (**tanpa Room Database**).
+- **Target Lingkungan:** Android `minSdk 24+` (teruji pada emulator `HP NENEKKU API 37.2`).
 
-## Status
+## Struktur Proyek (`com.example.studiobook`)
 
-- [x] Repository publik dibuat[cite: 5, 23].
-- [x] README proyek disusun[cite: 23].
-- [ ] SRS disusun dan ditinjau sesuai template mata kuliah[cite: 23].
-- [ ] Kebutuhan TBD dan diagram SRS dilengkapi serta diperiksa[cite: 17, 23].
-- [ ] UI/UX dan alur navigasi dirancang[cite: 7, 23].
-- [ ] Aplikasi Android dan backend diimplementasikan[cite: 7, 23].
-- [ ] Fitur, keamanan, integrasi API, serta penanganan kondisi gagal diverifikasi[cite: 7, 19, 23].
-
-Checklist ini akan diperbarui secara bertahap sesuai pekerjaan yang benar-benar selesai[cite: 23].
-
-## Progres
-
-| Tanggal | Progres |
-| :--- | :--- |
-| 2026-11-22 | Repository `0210_StudioBook` dibuat dan README awal disusun dengan tautan SRS[cite: 6, 23]. |
-
-Pedoman proyek meminta pembaruan progres sekurang-kurangnya sekali setiap minggu dan minimal 30 *commit* nyata[cite: 5, 6, 23]. *Commit* akan dibuat bertahap untuk mencatat perubahan yang benar-benar dikerjakan[cite: 10, 23].
-
-## Catatan
-
-Nama repository `0210_StudioBook` mengikuti format pedoman `4NIMBelakang_NamaProject` dengan `0210` sebagai empat digit terakhir NIM `20240140210`[cite: 6, 23]. Pastikan repository tetap publik dan selaras dengan SRS sebelum pengumpulan[cite: 5, 23].
+```text
+com.example.studiobook/
+├── data/
+│   ├── local/        # TokenManager.kt (Preferences DataStore untuk JWT & sesi)
+│   ├── model/        # StudioModels.kt (Users, Studios, Equipment, Bookings)
+│   ├── remote/       # ApiService.kt, RetrofitClient.kt (Retrofit + OkHttp)
+│   └── repository/   # StudioRepository.kt (Abstraksi akses data & REST API)
+├── ui/
+│   ├── component/    # StudioCard.kt (Komponen kartu UI reusable)
+│   ├── navigation/   # Screen.kt (Rute & navigasi Compose)
+│   ├── screen/       # StudioScreen.kt (Layar utama, katalog, booking, admin)
+│   └── theme/        # Color.kt, Theme.kt, Type.kt
+├── viewmodel/        # StudioViewModel.kt (StateFlow, validasi, anti-bentrok, auto-purge)
+└── MainActivity.kt   # Entry point aplikasi Jetpack Compose
